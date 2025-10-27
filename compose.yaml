@@ -1,0 +1,29 @@
+services:
+  service-a:
+    build: ./services/service-a
+    environment:
+      - PORT=5001
+    ports:
+      - "5001:5001"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:5001/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  service-b:
+    build: ./services/service-b
+    environment:
+      - PORT=5002
+      - SERVICE_A_URL=http://service-a:5001
+    ports:
+      - "5002:5002"
+    depends_on:
+      service-a:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:5002/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
