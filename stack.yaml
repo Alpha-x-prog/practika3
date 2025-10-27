@@ -1,0 +1,45 @@
+version: "3.9"
+
+networks:
+  app-net:
+    driver: overlay
+
+configs:
+  nginx_conf:
+    file: ./gateway/nginx.conf
+
+services:
+  service-a:
+    image: ghcr.io/<GITHUB_USER>/<REPO>-service-a:latest
+    networks: [app-net]
+    environment:
+      - PORT=5001
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+
+  service-b:
+    image: ghcr.io/<GITHUB_USER>/<REPO>-service-b:latest
+    networks: [app-net]
+    environment:
+      - PORT=5002
+      - SERVICE_A_URL=http://service-a:5001
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+
+  nginx:
+    image: nginx:alpine
+    networks: [app-net]
+    ports:
+      - "80:80"
+    configs:
+      - source: nginx_conf
+        target: /etc/nginx/nginx.conf
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
