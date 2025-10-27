@@ -10,7 +10,7 @@ configs:
 
 services:
   service-a:
-    image: ghcr.io/<GITHUB_USER>/<REPO>-service-a:latest
+    image: practika3-service-a:latest
     networks: [app-net]
     environment:
       - PORT=5001
@@ -20,7 +20,7 @@ services:
         condition: on-failure
 
   service-b:
-    image: ghcr.io/<GITHUB_USER>/<REPO>-service-b:latest
+    image: practika3-service-b:latest
     networks: [app-net]
     environment:
       - PORT=5002
